@@ -121,8 +121,8 @@ Instance type for all: **`t3.small`**.
 | SSH user | `ec2-user` |
 | SSH password | `DevOps321` |
 | SSH CIDR | `0.0.0.0/0` |
+| SSH key pair | **None** — password authentication only (set in user-data) |
 | AMI | `ami-0220d79f3f480ecf5` |
-| Key pair | `roboshop-key` (also required by AWS even with password auth) |
 | DB passwords (app) | `RoboShop@1` (per microservices documentation) |
 
 ### 3.7 State backend
@@ -206,7 +206,7 @@ Logs: `/var/log/user-data.log`
 1. Push this repository to GitHub (user-data clones it at apply time).
 2. Jump EC2 with IAM role: VPC, EC2, Route53, S3 permissions.
 3. S3 bucket `terraform-state-d88` exists.
-4. Key pair `roboshop-key` exists in `us-east-1`.
+4. No EC2 key pair required — SSH uses `ec2-user` / `DevOps321` only.
 
 ### Commands (on jump EC2)
 

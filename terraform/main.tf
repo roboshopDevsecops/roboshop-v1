@@ -219,7 +219,6 @@ module "ec2_db" {
   tier               = "db"
   instances          = var.db_instances
   ami_id             = var.ami_id
-  key_name           = var.key_name
   ec2_user           = var.ec2_user
   ec2_password       = var.ec2_password
   subnet_ids         = local.subnet_ids
@@ -238,7 +237,6 @@ module "ec2_app" {
   tier               = "app"
   instances          = var.app_instances
   ami_id             = var.ami_id
-  key_name           = var.key_name
   ec2_user           = var.ec2_user
   ec2_password       = var.ec2_password
   subnet_ids         = local.subnet_ids
@@ -259,7 +257,6 @@ module "ec2_frontend" {
   tier               = "frontend"
   instances          = var.frontend_instances
   ami_id             = var.ami_id
-  key_name           = var.key_name
   ec2_user           = var.ec2_user
   ec2_password       = var.ec2_password
   subnet_ids         = local.subnet_ids

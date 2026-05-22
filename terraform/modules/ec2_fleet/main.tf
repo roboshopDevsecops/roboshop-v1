@@ -6,7 +6,6 @@ module "ec2" {
   component           = each.value.component
   ami_id              = var.ami_id
   instance_type       = each.value.instance_type
-  key_name            = var.key_name
   subnet_id           = var.subnet_ids[each.value.subnet_type][each.value.subnet_index]
   security_group_ids  = var.security_group_ids[each.value.security_group]
   associate_public_ip = each.value.associate_public_ip

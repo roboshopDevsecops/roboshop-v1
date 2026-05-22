@@ -157,7 +157,7 @@ Default placeholders in `ansible/group_vars/all.yml` are overwritten at boot by 
 | `ami_id` | `ami-0220d79f3f480ecf5` | Agreed AMI |
 | `ec2_user` | `ec2-user` | |
 | `ec2_password` | `DevOps321` | Sensitive in Terraform |
-| `key_name` | `roboshop-key` | Must exist in AWS |
+| SSH | `ec2-user` / `DevOps321` | No key pair; password set in user-data |
 | `ansible_repo_url` | GitHub monorepo URL | Must be reachable from instances |
 | `db_instances` | mysql, mongodb, valkey, rabbitmq | Tier 1 |
 | `app_instances` | 8 microservices | Tier 2 |

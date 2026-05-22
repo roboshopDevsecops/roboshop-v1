@@ -2,7 +2,6 @@ env        = "dev"
 aws_region = "us-east-1"
 
 ami_id       = "ami-0220d79f3f480ecf5"
-key_name     = "roboshop-key"
 ec2_user     = "ec2-user"
 ec2_password = "DevOps321"
 

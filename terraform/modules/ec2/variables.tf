@@ -22,10 +22,6 @@ variable "security_group_ids" {
   type = list(string)
 }
 
-variable "key_name" {
-  type = string
-}
-
 variable "ec2_user" {
   type    = string
   default = "ec2-user"

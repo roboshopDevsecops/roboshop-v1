@@ -66,7 +66,7 @@ roboshop-v1/
 | SSH user | `ec2-user` |
 | SSH password | `DevOps321` |
 | SSH from | `0.0.0.0/0` |
-| Key pair | `roboshop-key` |
+| SSH key pair | None (password auth only) |
 | State bucket | `terraform-state-d88` |
 | Git repo (user-data) | `https://github.com/raghudevopsb88/roboshop-v1.git` |
 
@@ -108,9 +108,8 @@ Terraform applies three tiers in sequence:
 
 1. AWS account; jump EC2 with IAM role (VPC, EC2, Route53, S3).
 2. S3 bucket `terraform-state-d88` (or edit `terraform/environments/dev/state.tfvars`).
-3. Key pair `roboshop-key` in `us-east-1`.
-4. **Push this repo to GitHub** before apply (user-data clones it).
-5. Terraform and Git installed on jump EC2.
+3. **Push this repo to GitHub** before apply (user-data clones it).
+4. Terraform and Git installed on jump EC2.
 
 ---
 

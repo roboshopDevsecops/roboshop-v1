@@ -1,0 +1,20 @@
+---
+# RHEL 9 (lab AMI): mysql-server, redis
+# RHEL 10+ (RoboShop docs): mysql8.4-server, valkey
+- name: Set package names for RHEL 10 and newer
+  ansible.builtin.set_fact:
+    mysql_server_package: mysql8.4-server
+    mysql_client_package: mysql8.4
+    redis_server_package: valkey
+    redis_service_name: valkey
+    redis_config_file: /etc/valkey/valkey.conf
+  when: ansible_distribution_major_version | int >= 10
+
+- name: Set package names for RHEL 9
+  ansible.builtin.set_fact:
+    mysql_server_package: mysql-server
+    mysql_client_package: mysql
+    redis_server_package: redis
+    redis_service_name: redis
+    redis_config_file: /etc/redis/redis.conf
+  when: ansible_distribution_major_version | int < 10

@@ -5,7 +5,7 @@
       - java-21-openjdk
       - java-21-openjdk-devel
       - maven
-      - mysql8.4
+      - "{{ mysql_client_package }}"
     state: present
 
 - name: Create appuser

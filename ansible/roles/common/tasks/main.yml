@@ -1,4 +1,7 @@
 ---
+- name: Detect OS-specific package names
+  ansible.builtin.include_tasks: os-packages.yml
+
 - name: Disable SELinux enforcement
   ansible.builtin.command: setenforce 0
   changed_when: true

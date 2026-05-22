@@ -4,7 +4,7 @@
     name:
       - python3
       - python3-pip
-      - mysql8.4
+      - "{{ mysql_client_package }}"
     state: present
 
 - name: Create appuser

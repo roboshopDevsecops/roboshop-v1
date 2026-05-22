@@ -4,7 +4,7 @@
     name:
       - golang
       - git
-      - mysql8.4
+      - "{{ mysql_client_package }}"
     state: present
 
 - name: Deploy catalogue artifact

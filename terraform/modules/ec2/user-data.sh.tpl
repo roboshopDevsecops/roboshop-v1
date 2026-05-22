@@ -37,4 +37,5 @@ ratings_host: "${ratings_host}"
 frontend_host: "${frontend_host}"
 EOF
 
+export PATH=/usr/local/bin:/usr/sbin:/usr/bin:$PATH
 ansible-playbook -i localhost, -c local main.yml -e "COMPONENT=${component}"

@@ -203,6 +203,9 @@ Uses `ansible_user=ec2-user`, `ansible_password=DevOps321`, `ansible_connection=
 | mysqld not listening during root setup | mysql | `wait_for` port 3306 before SQL |
 | Service runs as `appuser` but files owned by root | All app roles | `common/tasks/app-permissions.yml` |
 | `npm` / `mvn` needs internet | frontend, node/java roles | NAT Gateway on app/db subnets |
+| Wrong MySQL package on RHEL 9 | mysql, catalogue, shipping, ratings | `common/tasks/os-packages.yml` uses `mysql-server` on RHEL 9, `mysql8.4-server` on RHEL 10+ |
+| Valkey not in RHEL 9 repos | valkey | Installs `redis` on RHEL 9 (same port 6379) |
+| `ansible-playbook` not in PATH after pip install | All (labauto) | user-data exports `/usr/local/bin` |
 | DNS host not resolved at boot | App/frontend tiers | User-data waits for prior-tier DNS; Terraform tier order |
 
 **Remaining timing risks:** `payment` expects cart and user HTTP APIs — tier order does not wait for those services to finish Ansible. If payment fails, re-run: `make remote HOST=payment... COMPONENT=payment`.

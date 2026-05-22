@@ -1,10 +1,10 @@
 ---
 - name: Install MySQL server
   ansible.builtin.dnf:
-    name: mysql8.4-server
+    name: "{{ mysql_server_package }}"
     state: present
 
-- name: Enable and start mysqld
+- name: Enable and start MySQL
   ansible.builtin.systemd_service:
     name: mysqld
     enabled: true
@@ -26,3 +26,14 @@
       FLUSH PRIVILEGES;
     "
   changed_when: true
+  failed_when: false
+
+- name: Configure MySQL root with password (RHEL 9 initial install)
+  ansible.builtin.shell: |
+    mysql -u root -pRoboShop@1 -e "
+      CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'RoboShop@1';
+      GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+      FLUSH PRIVILEGES;
+    "
+  changed_when: true
+  failed_when: false

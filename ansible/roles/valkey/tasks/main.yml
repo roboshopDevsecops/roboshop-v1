@@ -1,20 +1,25 @@
 ---
-- name: Install Valkey
+- name: Install Redis or Valkey server
   ansible.builtin.dnf:
-    name: valkey
+    name: "{{ redis_server_package }}"
     state: present
 
-- name: Allow remote Valkey connections
+- name: Allow remote Redis/Valkey connections (bind)
   ansible.builtin.lineinfile:
-    path: /etc/valkey/valkey.conf
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-  loop:
-    - { regexp: '^bind ', line: 'bind 0.0.0.0' }
-    - { regexp: '^protected-mode ', line: 'protected-mode no' }
+    path: "{{ redis_config_file }}"
+    regexp: '^bind '
+    line: 'bind 0.0.0.0'
+  notify: Restart redis service
 
-- name: Enable and start Valkey
+- name: Disable protected mode (Redis/Valkey)
+  ansible.builtin.lineinfile:
+    path: "{{ redis_config_file }}"
+    regexp: '^protected-mode '
+    line: 'protected-mode no'
+  notify: Restart redis service
+
+- name: Enable and start Redis/Valkey
   ansible.builtin.systemd_service:
-    name: valkey
+    name: "{{ redis_service_name }}"
     enabled: true
-    state: restarted
+    state: started

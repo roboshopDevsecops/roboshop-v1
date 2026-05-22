@@ -12,21 +12,27 @@
     system: true
     shell: /bin/false
 
-- name: Download payment artifact
-  ansible.builtin.get_url:
-    url: "{{ artifact_base_url }}/payment.zip"
-    dest: /tmp/payment.zip
+- name: Wait for RabbitMQ
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-for-rabbitmq
 
-- name: Extract payment application
-  ansible.builtin.unarchive:
-    src: /tmp/payment.zip
-    dest: /app
-    remote_src: true
+- name: Deploy payment artifact
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: deploy-artifact
+  vars:
+    artifact_zip: payment.zip
 
 - name: Install Python dependencies
   ansible.builtin.pip:
     requirements: /app/requirements.txt
     executable: pip3
+
+- name: Set payment ownership
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-permissions
 
 - name: Install payment systemd unit
   ansible.builtin.template:

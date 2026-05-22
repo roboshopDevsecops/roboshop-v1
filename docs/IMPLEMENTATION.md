@@ -191,6 +191,24 @@ Uses `ansible_user=ec2-user`, `ansible_password=DevOps321`, `ansible_connection=
 
 ---
 
+## Ansible failure risks (and mitigations)
+
+| Risk | Roles affected | Mitigation in repo |
+|------|----------------|-------------------|
+| `unarchive` dest dir missing | All app roles + frontend | `common/tasks/deploy-artifact.yml` creates `/app` first; frontend creates `/tmp/frontend-build` |
+| MySQL not ready when app runs SQL | catalogue, shipping, ratings | `common/tasks/wait-for-mysql.yml` |
+| MongoDB not ready | user, orders | `common/tasks/wait-for-mongodb.yml` |
+| Valkey not ready | cart | `common/tasks/wait-for-valkey.yml` |
+| RabbitMQ not ready | payment, orders | `common/tasks/wait-for-rabbitmq.yml` |
+| mysqld not listening during root setup | mysql | `wait_for` port 3306 before SQL |
+| Service runs as `appuser` but files owned by root | All app roles | `common/tasks/app-permissions.yml` |
+| `npm` / `mvn` needs internet | frontend, node/java roles | NAT Gateway on app/db subnets |
+| DNS host not resolved at boot | App/frontend tiers | User-data waits for prior-tier DNS; Terraform tier order |
+
+**Remaining timing risks:** `payment` expects cart and user HTTP APIs — tier order does not wait for those services to finish Ansible. If payment fails, re-run: `make remote HOST=payment... COMPONENT=payment`.
+
+---
+
 ## Troubleshooting
 
 | Symptom | Check |

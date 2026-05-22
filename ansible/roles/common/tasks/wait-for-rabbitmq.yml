@@ -1,0 +1,7 @@
+---
+- name: Wait for RabbitMQ to accept connections
+  ansible.builtin.wait_for:
+    host: "{{ rabbitmq_host }}"
+    port: 5672
+    delay: 5
+    timeout: 300

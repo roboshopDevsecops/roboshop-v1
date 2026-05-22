@@ -1,0 +1,7 @@
+---
+- name: Wait for MySQL to accept connections
+  ansible.builtin.wait_for:
+    host: "{{ mysql_host }}"
+    port: 3306
+    delay: 5
+    timeout: 300

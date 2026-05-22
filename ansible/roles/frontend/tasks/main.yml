@@ -24,22 +24,34 @@
     dest: /tmp/frontend.zip
     mode: "0644"
 
+- name: Create frontend build directory
+  ansible.builtin.file:
+    path: /tmp/frontend-build
+    state: directory
+    mode: "0755"
+
 - name: Extract frontend source
   ansible.builtin.unarchive:
     src: /tmp/frontend.zip
     dest: /tmp/frontend-build
     remote_src: true
-    creates: /tmp/frontend-build/package.json
+    extra_opts:
+      - -o
+
+- name: Find frontend project directory
+  ansible.builtin.shell: dirname "$(find /tmp/frontend-build -name package.json | head -1)"
+  register: frontend_build_dir_cmd
+  changed_when: false
 
 - name: Build frontend static assets
   ansible.builtin.shell: npm install && npm run build
   args:
-    chdir: /tmp/frontend-build
+    chdir: "{{ frontend_build_dir_cmd.stdout }}"
 
 - name: Deploy static site to nginx docroot
   ansible.builtin.shell: rm -rf /usr/share/nginx/html/* && cp -r out/* /usr/share/nginx/html/
   args:
-    chdir: /tmp/frontend-build
+    chdir: "{{ frontend_build_dir_cmd.stdout }}"
 
 - name: Enable and start nginx
   ansible.builtin.systemd_service:

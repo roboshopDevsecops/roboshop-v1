@@ -1,0 +1,8 @@
+---
+- name: Set application directory ownership
+  ansible.builtin.file:
+    path: /app
+    owner: appuser
+    group: appuser
+    recurse: true
+    mode: o-rwx

@@ -13,16 +13,17 @@
     system: true
     shell: /bin/false
 
-- name: Download ratings artifact
-  ansible.builtin.get_url:
-    url: "{{ artifact_base_url }}/ratings.zip"
-    dest: /tmp/ratings.zip
+- name: Deploy ratings artifact
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: deploy-artifact
+  vars:
+    artifact_zip: ratings.zip
 
-- name: Extract ratings application
-  ansible.builtin.unarchive:
-    src: /tmp/ratings.zip
-    dest: /app
-    remote_src: true
+- name: Wait for MySQL
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-for-mysql
 
 - name: Initialize ratings database
   ansible.builtin.shell: |
@@ -36,6 +37,11 @@
     requirements: /app/requirements.txt
     executable: pip3
     extra_args: --upgrade cryptography
+
+- name: Set ratings ownership
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-permissions
 
 - name: Install ratings systemd unit
   ansible.builtin.template:

@@ -9,25 +9,25 @@
 - name: Create appuser
   ansible.builtin.user:
     name: appuser
-    home: /app
     system: true
     shell: /bin/false
 
-- name: Download notification artifact
-  ansible.builtin.get_url:
-    url: "{{ artifact_base_url }}/notification.zip"
-    dest: /tmp/notification.zip
-
-- name: Extract notification application
-  ansible.builtin.unarchive:
-    src: /tmp/notification.zip
-    dest: /app
-    remote_src: true
+- name: Deploy notification artifact
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: deploy-artifact
+  vars:
+    artifact_zip: notification.zip
 
 - name: Install Python dependencies
   ansible.builtin.pip:
     requirements: /app/requirements.txt
     executable: pip3
+
+- name: Set notification ownership
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-permissions
 
 - name: Install notification systemd unit
   ansible.builtin.template:

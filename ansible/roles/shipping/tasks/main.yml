@@ -14,16 +14,17 @@
     system: true
     shell: /bin/false
 
-- name: Download shipping artifact
-  ansible.builtin.get_url:
-    url: "{{ artifact_base_url }}/shipping.zip"
-    dest: /tmp/shipping.zip
+- name: Deploy shipping artifact
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: deploy-artifact
+  vars:
+    artifact_zip: shipping.zip
 
-- name: Extract shipping application
-  ansible.builtin.unarchive:
-    src: /tmp/shipping.zip
-    dest: /app
-    remote_src: true
+- name: Wait for MySQL
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-for-mysql
 
 - name: Initialize shipping database
   ansible.builtin.shell: |
@@ -36,6 +37,11 @@
   ansible.builtin.shell: mvn clean package -DskipTests && cp target/shipping.jar /app/shipping.jar
   args:
     chdir: /app
+
+- name: Set shipping ownership
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-permissions
 
 - name: Install shipping systemd unit
   ansible.builtin.template:

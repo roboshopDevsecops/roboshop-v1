@@ -10,6 +10,13 @@
     enabled: true
     state: started
 
+- name: Wait for MySQL port
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 3306
+    delay: 10
+    timeout: 120
+
 - name: Configure MySQL root remote access
   ansible.builtin.shell: |
     mysql -u root -e "

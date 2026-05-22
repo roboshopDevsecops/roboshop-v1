@@ -15,21 +15,27 @@
     system: true
     shell: /bin/false
 
-- name: Download cart service artifact
-  ansible.builtin.get_url:
-    url: "{{ artifact_base_url }}/cart.zip"
-    dest: /tmp/cart.zip
+- name: Wait for Valkey
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-for-valkey
 
-- name: Extract cart service
-  ansible.builtin.unarchive:
-    src: /tmp/cart.zip
-    dest: /app
-    remote_src: true
+- name: Deploy cart service artifact
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: deploy-artifact
+  vars:
+    artifact_zip: cart.zip
 
 - name: Install Node.js dependencies
   ansible.builtin.shell: npm install --production
   args:
     chdir: /app
+
+- name: Set cart service ownership
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-permissions
 
 - name: Install cart systemd unit
   ansible.builtin.template:

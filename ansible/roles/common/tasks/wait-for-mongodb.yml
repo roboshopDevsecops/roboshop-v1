@@ -1,0 +1,7 @@
+---
+- name: Wait for MongoDB to accept connections
+  ansible.builtin.wait_for:
+    host: "{{ mongodb_host }}"
+    port: 27017
+    delay: 5
+    timeout: 300

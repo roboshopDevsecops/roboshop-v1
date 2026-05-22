@@ -1,0 +1,20 @@
+---
+- name: Ensure application directory exists
+  ansible.builtin.file:
+    path: /app
+    state: directory
+    mode: "0755"
+
+- name: Download application artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/{{ artifact_zip }}"
+    dest: "/tmp/{{ artifact_zip }}"
+    mode: "0644"
+
+- name: Extract application artifact
+  ansible.builtin.unarchive:
+    src: "/tmp/{{ artifact_zip }}"
+    dest: /app
+    remote_src: true
+    extra_opts:
+      - -o

@@ -7,16 +7,17 @@
       - mysql8.4
     state: present
 
-- name: Download catalogue artifact
-  ansible.builtin.get_url:
-    url: "{{ artifact_base_url }}/catalogue.zip"
-    dest: /tmp/catalogue.zip
+- name: Deploy catalogue artifact
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: deploy-artifact
+  vars:
+    artifact_zip: catalogue.zip
 
-- name: Extract catalogue application
-  ansible.builtin.unarchive:
-    src: /tmp/catalogue.zip
-    dest: /app
-    remote_src: true
+- name: Wait for MySQL
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-for-mysql
 
 - name: Initialize catalogue database
   ansible.builtin.shell: |
@@ -38,12 +39,9 @@
     chdir: /app
 
 - name: Set catalogue ownership
-  ansible.builtin.file:
-    path: /app
-    owner: appuser
-    group: appuser
-    recurse: true
-    mode: o-rwx
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-permissions
 
 - name: Install catalogue systemd unit
   ansible.builtin.template:

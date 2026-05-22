@@ -6,14 +6,18 @@ After=network.target
 Type=simple
 User=appuser
 WorkingDirectory=/app
-ExecStart=java -jar /app/shipping.jar
+ExecStart=/usr/bin/java -jar /app/shipping.jar
 Restart=on-failure
 RestartSec=10
 SyslogIdentifier=shipping
-Environment=DB_HOST={{ mysql_host }}
+Environment=JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true
+Environment=DB_HOST={{ mysql_connect_host | default(mysql_host) }}
 Environment=DB_USER=shipping
 Environment=DB_PASS=RoboShop@1
 Environment=PORT=8004
+Environment=SPRING_DATASOURCE_URL=jdbc:mysql://{{ mysql_connect_host | default(mysql_host) }}:3306/cities?useSSL=false&allowPublicKeyRetrieval=true
+Environment=SPRING_DATASOURCE_USERNAME=shipping
+Environment=SPRING_DATASOURCE_PASSWORD=RoboShop@1
 
 [Install]
 WantedBy=multi-user.target

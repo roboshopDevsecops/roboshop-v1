@@ -1,0 +1,10 @@
+---
+- name: Resolve MySQL hostname to IPv4 address
+  ansible.builtin.shell: getent ahostsv4 {{ mysql_host }} | awk '{print $1; exit}'
+  register: mysql_ipv4
+  changed_when: false
+  failed_when: mysql_ipv4.stdout | trim == ''
+
+- name: Set MySQL connection host fact
+  ansible.builtin.set_fact:
+    mysql_connect_host: "{{ mysql_ipv4.stdout | trim }}"

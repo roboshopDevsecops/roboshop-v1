@@ -1,0 +1,22 @@
+---
+- name: Set ownership on /app
+  ansible.builtin.file:
+    path: /app
+    owner: appuser
+    group: appuser
+    recurse: true
+    mode: o-rwx
+
+- name: Install systemd unit
+  ansible.builtin.template:
+    src: "{{ service_unit }}.service.j2"
+    dest: "/etc/systemd/system/{{ service_unit }}.service"
+    mode: "0644"
+  notify: Restart service
+
+- name: Enable and start service
+  ansible.builtin.systemd_service:
+    name: "{{ service_unit }}"
+    daemon_reload: true
+    enabled: true
+    state: started

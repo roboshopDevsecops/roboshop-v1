@@ -1,0 +1,44 @@
+---
+- name: Install Node.js repository
+  ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+  args:
+    creates: /etc/yum.repos.d/nodesource.repo
+
+- name: Install Node.js
+  ansible.builtin.dnf:
+    name: nodejs
+    state: present
+
+- name: Create appuser
+  ansible.builtin.user:
+    name: appuser
+    system: true
+    shell: /bin/false
+
+- name: Download cart service artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/cart.zip"
+    dest: /tmp/cart.zip
+
+- name: Extract cart service
+  ansible.builtin.unarchive:
+    src: /tmp/cart.zip
+    dest: /app
+    remote_src: true
+
+- name: Install Node.js dependencies
+  ansible.builtin.shell: npm install --production
+  args:
+    chdir: /app
+
+- name: Install cart systemd unit
+  ansible.builtin.template:
+    src: cart.service.j2
+    dest: /etc/systemd/system/cart.service
+
+- name: Start cart service
+  ansible.builtin.systemd_service:
+    name: cart
+    daemon_reload: true
+    enabled: true
+    state: started

@@ -1,0 +1,20 @@
+[Unit]
+Description=RoboShop Catalogue Service
+After=network.target
+
+[Service]
+Type=simple
+User=appuser
+WorkingDirectory=/app
+ExecStart=/app/catalogue
+Restart=on-failure
+RestartSec=10
+SyslogIdentifier=catalogue
+Environment=MYSQL_HOST={{ mysql_host }}
+Environment=MYSQL_USER=catalogue
+Environment=MYSQL_PASSWORD=RoboShop@1
+Environment=MYSQL_DATABASE=catalogue
+Environment=PORT=8002
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,42 @@
+---
+- name: Install Python
+  ansible.builtin.dnf:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: Create appuser
+  ansible.builtin.user:
+    name: appuser
+    home: /app
+    system: true
+    shell: /bin/false
+
+- name: Download notification artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/notification.zip"
+    dest: /tmp/notification.zip
+
+- name: Extract notification application
+  ansible.builtin.unarchive:
+    src: /tmp/notification.zip
+    dest: /app
+    remote_src: true
+
+- name: Install Python dependencies
+  ansible.builtin.pip:
+    requirements: /app/requirements.txt
+    executable: pip3
+
+- name: Install notification systemd unit
+  ansible.builtin.template:
+    src: notification.service.j2
+    dest: /etc/systemd/system/notification.service
+
+- name: Start notification service
+  ansible.builtin.systemd_service:
+    name: notification
+    daemon_reload: true
+    enabled: true
+    state: started

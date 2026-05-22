@@ -1,0 +1,16 @@
+---
+artifact_base_url: "https://raw.githubusercontent.com/raghudevopsb88/roboshop-microservices-documentation/main/artifacts"
+env: dev
+mysql_host: localhost
+mongodb_host: localhost
+valkey_host: localhost
+rabbitmq_host: localhost
+catalogue_host: localhost
+user_host: localhost
+cart_host: localhost
+shipping_host: localhost
+payment_host: localhost
+notification_host: localhost
+orders_host: localhost
+ratings_host: localhost
+frontend_host: localhost

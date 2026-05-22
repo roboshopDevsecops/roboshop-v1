@@ -1,0 +1,18 @@
+[Unit]
+Description=RoboShop Cart Service
+After=network.target
+
+[Service]
+Type=simple
+User=appuser
+WorkingDirectory=/app
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=10
+SyslogIdentifier=cart
+Environment=REDIS_HOST={{ valkey_host }}
+Environment=CATALOGUE_URL=http://{{ catalogue_host }}:8002
+Environment=PORT=8003
+
+[Install]
+WantedBy=multi-user.target

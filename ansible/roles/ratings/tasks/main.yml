@@ -1,0 +1,50 @@
+---
+- name: Install Python and MySQL client
+  ansible.builtin.dnf:
+    name:
+      - python3
+      - python3-pip
+      - mysql8.4
+    state: present
+
+- name: Create appuser
+  ansible.builtin.user:
+    name: appuser
+    system: true
+    shell: /bin/false
+
+- name: Download ratings artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/ratings.zip"
+    dest: /tmp/ratings.zip
+
+- name: Extract ratings application
+  ansible.builtin.unarchive:
+    src: /tmp/ratings.zip
+    dest: /app
+    remote_src: true
+
+- name: Initialize ratings database
+  ansible.builtin.shell: |
+    mysql -h {{ mysql_host }} -u root -pRoboShop@1 < db/schema.sql
+    mysql -h {{ mysql_host }} -u root -pRoboShop@1 < db/app-user.sql
+  args:
+    chdir: /app
+
+- name: Install Python dependencies
+  ansible.builtin.pip:
+    requirements: /app/requirements.txt
+    executable: pip3
+    extra_args: --upgrade cryptography
+
+- name: Install ratings systemd unit
+  ansible.builtin.template:
+    src: ratings.service.j2
+    dest: /etc/systemd/system/ratings.service
+
+- name: Start ratings service
+  ansible.builtin.systemd_service:
+    name: ratings
+    daemon_reload: true
+    enabled: true
+    state: started

@@ -1,0 +1,42 @@
+---
+- name: Install Java and Maven
+  ansible.builtin.dnf:
+    name:
+      - java-21-openjdk
+      - java-21-openjdk-devel
+      - maven
+    state: present
+
+- name: Create appuser
+  ansible.builtin.user:
+    name: appuser
+    system: true
+    shell: /bin/false
+
+- name: Download orders artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/orders.zip"
+    dest: /tmp/orders.zip
+
+- name: Extract orders application
+  ansible.builtin.unarchive:
+    src: /tmp/orders.zip
+    dest: /app
+    remote_src: true
+
+- name: Build orders jar
+  ansible.builtin.shell: mvn clean package -DskipTests && cp target/orders.jar /app/orders.jar
+  args:
+    chdir: /app
+
+- name: Install orders systemd unit
+  ansible.builtin.template:
+    src: orders.service.j2
+    dest: /etc/systemd/system/orders.service
+
+- name: Start orders service
+  ansible.builtin.systemd_service:
+    name: orders
+    daemon_reload: true
+    enabled: true
+    state: started

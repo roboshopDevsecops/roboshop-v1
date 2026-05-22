@@ -1,0 +1,19 @@
+[Unit]
+Description=RoboShop Notification Service
+After=network.target
+
+[Service]
+Type=simple
+User=appuser
+WorkingDirectory=/app
+ExecStart=/usr/local/bin/gunicorn -b 0.0.0.0:8008 app:app
+Restart=on-failure
+RestartSec=10
+SyslogIdentifier=notification
+Environment=BREVO_API_KEY=
+Environment=FROM_EMAIL=noreply@roboshop.demo
+Environment=FROM_NAME=RoboShop
+Environment=PORT=8008
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,21 @@
+---
+- name: Install MySQL server
+  ansible.builtin.dnf:
+    name: mysql8.4-server
+    state: present
+
+- name: Enable and start mysqld
+  ansible.builtin.systemd_service:
+    name: mysqld
+    enabled: true
+    state: started
+
+- name: Configure MySQL root remote access
+  ansible.builtin.shell: |
+    mysql -u root -e "
+      CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'RoboShop@1';
+      GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+      ALTER USER 'root'@'localhost' IDENTIFIED BY 'RoboShop@1';
+      FLUSH PRIVILEGES;
+    "
+  changed_when: true

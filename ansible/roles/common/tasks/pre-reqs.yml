@@ -1,0 +1,20 @@
+---
+- name: Create appuser
+  ansible.builtin.user:
+    name: appuser
+    system: true
+    shell: /bin/false
+
+- name: Ensure /app directory exists
+  ansible.builtin.file:
+    path: /app
+    state: directory
+    mode: "0755"
+
+- name: Download and extract application artifact
+  ansible.builtin.unarchive:
+    src: "{{ artifact_base_url }}/{{ artifact_name }}.zip"
+    dest: /app
+    remote_src: true
+    extra_opts:
+      - -o

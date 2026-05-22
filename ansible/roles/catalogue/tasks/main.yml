@@ -1,0 +1,58 @@
+---
+- name: Install Go toolchain
+  ansible.builtin.dnf:
+    name:
+      - golang
+      - git
+      - mysql8.4
+    state: present
+
+- name: Download catalogue artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/catalogue.zip"
+    dest: /tmp/catalogue.zip
+
+- name: Extract catalogue application
+  ansible.builtin.unarchive:
+    src: /tmp/catalogue.zip
+    dest: /app
+    remote_src: true
+
+- name: Initialize catalogue database
+  ansible.builtin.shell: |
+    mysql -h {{ mysql_host }} -u root -pRoboShop@1 < db/schema.sql
+    mysql -h {{ mysql_host }} -u root -pRoboShop@1 < db/app-user.sql
+    mysql -h {{ mysql_host }} -u root -pRoboShop@1 catalogue < db/master-data.sql
+  args:
+    chdir: /app
+
+- name: Create appuser
+  ansible.builtin.user:
+    name: appuser
+    system: true
+    shell: /bin/false
+
+- name: Build catalogue binary
+  ansible.builtin.shell: go mod tidy && CGO_ENABLED=0 go build -o /app/catalogue .
+  args:
+    chdir: /app
+
+- name: Set catalogue ownership
+  ansible.builtin.file:
+    path: /app
+    owner: appuser
+    group: appuser
+    recurse: true
+    mode: o-rwx
+
+- name: Install catalogue systemd unit
+  ansible.builtin.template:
+    src: catalogue.service.j2
+    dest: /etc/systemd/system/catalogue.service
+
+- name: Start catalogue service
+  ansible.builtin.systemd_service:
+    name: catalogue
+    daemon_reload: true
+    enabled: true
+    state: started

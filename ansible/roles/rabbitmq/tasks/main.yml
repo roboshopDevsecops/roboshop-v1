@@ -1,0 +1,49 @@
+---
+- name: Add Erlang repository
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/rabbitmq_erlang.repo
+    mode: "0644"
+    content: |
+      [rabbitmq_erlang]
+      name=rabbitmq_erlang
+      baseurl=https://packagecloud.io/rabbitmq/erlang/el/9/$basearch
+      gpgcheck=0
+      enabled=1
+
+- name: Install Erlang
+  ansible.builtin.dnf:
+    name: erlang
+    state: present
+
+- name: Add RabbitMQ repository
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/rabbitmq_rabbitmq-server.repo
+    mode: "0644"
+    content: |
+      [rabbitmq_rabbitmq-server]
+      name=rabbitmq_rabbitmq-server
+      baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/9/$basearch
+      gpgcheck=0
+      enabled=1
+
+- name: Install RabbitMQ
+  ansible.builtin.dnf:
+    name: rabbitmq-server
+    state: present
+
+- name: Enable RabbitMQ management plugin
+  ansible.builtin.command: rabbitmq-plugins enable rabbitmq_management
+  changed_when: true
+
+- name: Enable and start RabbitMQ
+  ansible.builtin.systemd_service:
+    name: rabbitmq-server
+    enabled: true
+    state: restarted
+
+- name: Create RabbitMQ application user
+  ansible.builtin.shell: |
+    rabbitmqctl add_user roboshop RoboShop@1 || true
+    rabbitmqctl set_user_tags roboshop administrator
+    rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
+  changed_when: true

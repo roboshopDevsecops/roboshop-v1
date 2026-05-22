@@ -1,0 +1,20 @@
+---
+- name: Install Valkey
+  ansible.builtin.dnf:
+    name: valkey
+    state: present
+
+- name: Allow remote Valkey connections
+  ansible.builtin.lineinfile:
+    path: /etc/valkey/valkey.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^bind ', line: 'bind 0.0.0.0' }
+    - { regexp: '^protected-mode ', line: 'protected-mode no' }
+
+- name: Enable and start Valkey
+  ansible.builtin.systemd_service:
+    name: valkey
+    enabled: true
+    state: restarted

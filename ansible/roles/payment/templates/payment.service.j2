@@ -1,0 +1,21 @@
+[Unit]
+Description=RoboShop Payment Service
+After=network.target
+
+[Service]
+Type=simple
+User=appuser
+WorkingDirectory=/app
+ExecStart=/usr/local/bin/uvicorn main:app --host 0.0.0.0 --port 8005
+Restart=on-failure
+RestartSec=10
+SyslogIdentifier=payment
+Environment=AMQP_HOST={{ rabbitmq_host }}
+Environment=AMQP_USER=roboshop
+Environment=AMQP_PASS=RoboShop@1
+Environment=CART_URL=http://{{ cart_host }}:8003
+Environment=USER_URL=http://{{ user_host }}:8001
+Environment=PORT=8005
+
+[Install]
+WantedBy=multi-user.target

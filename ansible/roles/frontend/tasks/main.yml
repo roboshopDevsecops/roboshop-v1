@@ -1,0 +1,48 @@
+---
+- name: Install Node.js repository
+  ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+  args:
+    creates: /etc/yum.repos.d/nodesource.repo
+
+- name: Install nginx and Node.js
+  ansible.builtin.dnf:
+    name:
+      - nginx
+      - nodejs
+    state: present
+
+- name: Deploy nginx configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: "0644"
+  notify: Restart nginx
+
+- name: Download frontend artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/frontend.zip"
+    dest: /tmp/frontend.zip
+    mode: "0644"
+
+- name: Extract frontend source
+  ansible.builtin.unarchive:
+    src: /tmp/frontend.zip
+    dest: /tmp/frontend-build
+    remote_src: true
+    creates: /tmp/frontend-build/package.json
+
+- name: Build frontend static assets
+  ansible.builtin.shell: npm install && npm run build
+  args:
+    chdir: /tmp/frontend-build
+
+- name: Deploy static site to nginx docroot
+  ansible.builtin.shell: rm -rf /usr/share/nginx/html/* && cp -r out/* /usr/share/nginx/html/
+  args:
+    chdir: /tmp/frontend-build
+
+- name: Enable and start nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+    enabled: true
+    state: started

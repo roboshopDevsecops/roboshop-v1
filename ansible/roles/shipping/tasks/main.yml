@@ -1,0 +1,50 @@
+---
+- name: Install Java and build tools
+  ansible.builtin.dnf:
+    name:
+      - java-21-openjdk
+      - java-21-openjdk-devel
+      - maven
+      - mysql8.4
+    state: present
+
+- name: Create appuser
+  ansible.builtin.user:
+    name: appuser
+    system: true
+    shell: /bin/false
+
+- name: Download shipping artifact
+  ansible.builtin.get_url:
+    url: "{{ artifact_base_url }}/shipping.zip"
+    dest: /tmp/shipping.zip
+
+- name: Extract shipping application
+  ansible.builtin.unarchive:
+    src: /tmp/shipping.zip
+    dest: /app
+    remote_src: true
+
+- name: Initialize shipping database
+  ansible.builtin.shell: |
+    mysql -h {{ mysql_host }} -u root -pRoboShop@1 < db/schema.sql
+    mysql -h {{ mysql_host }} -u root -pRoboShop@1 < db/app-user.sql
+  args:
+    chdir: /app
+
+- name: Build shipping jar
+  ansible.builtin.shell: mvn clean package -DskipTests && cp target/shipping.jar /app/shipping.jar
+  args:
+    chdir: /app
+
+- name: Install shipping systemd unit
+  ansible.builtin.template:
+    src: shipping.service.j2
+    dest: /etc/systemd/system/shipping.service
+
+- name: Start shipping service
+  ansible.builtin.systemd_service:
+    name: shipping
+    daemon_reload: true
+    enabled: true
+    state: started

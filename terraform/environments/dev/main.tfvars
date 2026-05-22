@@ -5,7 +5,7 @@ ami_id       = "ami-0220d79f3f480ecf5"
 ec2_user     = "ec2-user"
 ec2_password = "DevOps321"
 
-ansible_repo_url = "https://github.com/raghudevopsb88/roboshop-v1.git"
+ansible_repo_url = "https://github.com/roboshopDevsecops/roboshop-v1.git"
 
 network = {
   dev = {

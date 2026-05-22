@@ -70,7 +70,7 @@ variable "ec2_password" {
 variable "ansible_repo_url" {
   type        = string
   description = "Git URL cloned by EC2 user-data (same monorepo)"
-  default     = "https://github.com/raghudevopsb88/roboshop-v1.git"
+  default     = "https://github.com/roboshopDevsecops/roboshop-v1.git"
 }
 
 variable "artifact_base_url" {

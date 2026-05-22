@@ -3,25 +3,7 @@ set -euxo pipefail
 
 exec > /var/log/user-data.log 2>&1
 
-setenforce 0 || true
-systemctl stop firewalld || true
-systemctl disable firewalld || true
-
-echo "${ec2_user}:${ec2_password}" | chpasswd
-if [ -f /etc/ssh/sshd_config.d/50-cloud-init.conf ]; then
-  sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config.d/50-cloud-init.conf
-fi
-grep -q '^PasswordAuthentication' /etc/ssh/sshd_config \
-  && sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config \
-  || echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config
-systemctl restart sshd
-
-dnf install -y git ansible-core python3-pip
-
-for attempt in $(seq 1 30); do
-  ping -c1 -W2 8.8.8.8 && break
-  sleep 10
-done
+sudo labauto ansible
 
 rm -rf /opt/roboshop-ansible
 git clone "${ansible_repo_url}" /opt/roboshop-ansible

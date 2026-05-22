@@ -57,56 +57,56 @@ app_instances = {
     component      = "catalogue"
     subnet_type    = "app"
     subnet_index   = 0
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
   user = {
     component      = "user"
     subnet_type    = "app"
     subnet_index   = 1
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
   cart = {
     component      = "cart"
     subnet_type    = "app"
     subnet_index   = 0
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
   shipping = {
     component      = "shipping"
     subnet_type    = "app"
     subnet_index   = 1
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
   payment = {
     component      = "payment"
     subnet_type    = "app"
     subnet_index   = 0
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
   notification = {
     component      = "notification"
     subnet_type    = "app"
     subnet_index   = 1
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
   orders = {
     component      = "orders"
     subnet_type    = "app"
     subnet_index   = 0
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
   ratings = {
     component      = "ratings"
     subnet_type    = "app"
     subnet_index   = 1
-    instance_type  = "t3.small"
+    instance_type  = "t3.micro"
     security_group = "app"
   }
 }
